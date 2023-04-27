@@ -57,7 +57,7 @@
 
   a {
     border: black solid 2px;
-    margin: 2rem auto;
+    margin-bottom: 3rem;
     padding: 1rem 3rem;
     display: block;
     text-align: center;
@@ -72,6 +72,10 @@
   a:hover {
     background-color: rgb(182, 124, 236);
   }
+
+  .form p b {
+    color: black !important;
+  }
 </style>
 <?php
 
@@ -81,6 +85,7 @@ include 'koneksi.php';
 
 if (isset($_POST['evidence'])) {
   echo "<h1>Hasil Diagnosa Penyakit</h1>";
+
   $evidenceCount = count($_POST['evidence']);
   if ($evidenceCount < 2) {
     echo "Pilih minimal 2 gejala";
@@ -91,9 +96,6 @@ if (isset($_POST['evidence'])) {
                 JOIN ds_problems b ON a.id_problem=b.id
                 WHERE a.id_evidence IN(" . $selectedEvidence . ")
                 GROUP BY a.id_evidence";
-
-
-    print_r($_POST['evidence']);
 
     $result = $db->query($sql);
     $evidence = [];
@@ -107,8 +109,22 @@ if (isset($_POST['evidence'])) {
     $row = $result->fetch_row();
     $fod = $row[0];
 
-    // Menentukan nilai densitas
     echo "<div class='card'>";
+
+    echo "<div class='form'><p><b>Gejala yang Dipilih :</b></p>";
+    $gejaladipilih = $_POST['evidence'];
+    foreach ($gejaladipilih as $gjlplh) {
+      $qry = mysqli_query($db, "SELECT * FROM ds_evidences WHERE id='$gjlplh' ");
+      while ($data = mysqli_fetch_array($qry)) {
+        echo "<p>";
+        echo $gjlplh . ". ";
+        echo $data['name'];
+        echo "</p> ";
+      }
+    }
+    echo "</div> <br>";
+
+    // Menentukan nilai densitas
     $urutan = 1;
     $densitas_baru = [];
     while (!empty($evidence)) {
